@@ -23,7 +23,7 @@ class TestNewton(unittest.TestCase):
 
         # Setting maxiter to 2 b/c we're guessing the actual root
         solver = newton.Newton(f, tol=1.e-15, maxiter=2)
-        x = solver.solve(2.0)
+        x = solver.solve(-2.0)
         # Equality should be exact if we supply *the* root, ergo
         # assertEqual rather than assertAlmostEqual
         self.assertEqual(x, -2.0)
