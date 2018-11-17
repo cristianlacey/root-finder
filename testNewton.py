@@ -29,7 +29,7 @@ class TestNewton(unittest.TestCase):
         self.assertEqual(x, -2.0)
 
     def testQuadratic(self):
-        # Testing parabola of the form y = x^2 -1, where we'd
+        # Testing parabola of the form y = x^2 - 1, where we'd
         # expect roots at x = +-1. Tests starting points
         # on either side of each of the two roots to ensure
         # the closest root is found.
@@ -52,6 +52,52 @@ class TestNewton(unittest.TestCase):
         for init in root2_init_cond:
             x2 = solver.solve(init)
             self.assertAlmostEqual(x2, 1.0)
+
+    def testPolynomial(self):
+        # Tests third degree polynomial: y = x(x+10)(x-10)
+        # for which the expected roots are x = -10, 0, 10
+        # starting from within one of three intervals. Each
+        # interval corresponds to initial x values that lie
+        # closest to one of the roots.
+        f = lambda x : x*(x+10)*(x-10)
+        solver = newton.Newton(f, tol=1.e-8, maxiter=100)
+
+        # Checks initial conditions close to root at x = -10
+        root1_init_cond = np.linspace(-100.0, -6.0, 100)
+        for init in root1_init_cond:
+            x1 = solver.solve(init)
+            self.assertAlmostEqual(x1,-10.0)
+
+        # Checks initial conditions close to root at x = 0
+        root2_init_cond = np.linspace(-4.0, 4.0, 10)
+        for init in root2_init_cond:
+            x2 = solver.solve(init)
+            self.assertAlmostEqual(x2, 0.0)
+
+        # Checks initial conditions close to root at x = 10
+        root3_init_cond = np.linspace(6.0, 100.0, 100)
+        for init in root3_init_cond:
+            x3 = solver.solve(init)
+            self.assertAlmostEqual(x3, 10.0)
+
+    def testLocalExtrema(self):
+        # If a guess is a local extrema (or very close
+        # to a local extrema) then the local gradient will
+        # be close to zero, sending the next step off toward
+        # infinity. If the guess is exactly an extrema then
+        # the derivative will be zero and the Newton.step()
+        # method should result in a ZeroDivisionError
+        f = lambda x : 1.0
+        solver = newton.Newton(f, tol=1.e-8, maxiter=10)
+        self.assertRaises(ZeroDivisionError,solver.solve(1.0))        
+            
+    def testRootlessFunction(self):
+        # Tests the function y = x^2 + 1, which has no real roots.
+        # Should raise exception when roots aren't located within
+        # desired threshold.
+        f = lambda x : x**2 + 1.0
+        solver = newton.Newton(f, tol=1.e-8, maxiter=10)
+        self.assertRaises(ValueError, solver.solve(1.0))
         
 if __name__ == "__main__":
     unittest.main()
