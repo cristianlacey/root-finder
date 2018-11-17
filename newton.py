@@ -49,6 +49,7 @@ class Newton(object):
                 return x
             x = self.step(x, fx)
 
+        raise ValueError
         return x
 
     def step(self, x, fx=None):
@@ -60,10 +61,14 @@ class Newton(object):
             fx = self._f(x)
 
         Df_x = F.approximateJacobian(self._f, x, self._dx)
+        
         # linalg.solve(A,B) returns the matrix solution to AX = B, so
         # it gives (A^{-1}) B. np.matrix() promotes scalars to 1x1
         # matrices.
-        h = np.linalg.solve(np.matrix(Df_x), np.matrix(fx))
+        try:
+            h = np.linalg.solve(np.matrix(Df_x), np.matrix(fx))
+        except:
+            raise ZeroDivisionError
         # Suppose x was a scalar. At this point, h is a 1x1 matrix. If
         # we want to return a scalar value for our next guess, we need
         # to re-scalarize h before combining it with our previous
@@ -73,4 +78,4 @@ class Newton(object):
         if np.isscalar(x):
             h = np.asscalar(h)
 
-        return x + h
+        return x - h
