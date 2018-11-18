@@ -86,10 +86,11 @@ class TestNewton(unittest.TestCase):
         # be close to zero, sending the next step off toward
         # infinity. If the guess is exactly an extrema then
         # the derivative will be zero and the Newton.step()
-        # method should result in a ZeroDivisionError
-        f = lambda x : 1.0
-        solver = newton.Newton(f, tol=1.e-8, maxiter=10)
-        self.assertRaises(ZeroDivisionError,solver.solve(1.0))        
+        # method should increment the initial guess by epsilon.
+        f = lambda x : x**2 - 1.0
+        solver = newton.Newton(f, tol=1.e-8, maxiter=100)
+        x = solver.solve(0.0)
+        self.assertAlmostEqual(x, 1.0)
             
     def testRootlessFunction(self):
         # Tests the function y = x^2 + 1, which has no real roots.
@@ -97,7 +98,7 @@ class TestNewton(unittest.TestCase):
         # desired threshold.
         f = lambda x : x**2 + 1.0
         solver = newton.Newton(f, tol=1.e-8, maxiter=10)
-        self.assertRaises(ValueError, solver.solve(1.0))
+        self.assertRaises(RuntimeError, solver.solve, 1.0)
         
 if __name__ == "__main__":
     unittest.main()

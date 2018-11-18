@@ -48,8 +48,8 @@ class Newton(object):
             if np.linalg.norm(fx) < self._tol:
                 return x
             x = self.step(x, fx)
-
-        raise ValueError
+            
+        raise RuntimeError("MaxIterReached")
         return x
 
     def step(self, x, fx=None):
@@ -67,8 +67,16 @@ class Newton(object):
         # matrices.
         try:
             h = np.linalg.solve(np.matrix(Df_x), np.matrix(fx))
-        except:
-            raise ZeroDivisionError
+        except: # FIX THIS, NAME THE EXCEPTION
+            if np.isscalar(x):
+                epsilon = 0.1
+            else:
+                epsilon = np.ones(x.shape)*0.1
+            x += epsilon
+            fx = self._f(x)
+            Df_x = F.approximateJacobian(self._f, x, self._dx)
+            h = np.linalg.solve(np.matrix(Df_x), np.matrix(fx))
+            
         # Suppose x was a scalar. At this point, h is a 1x1 matrix. If
         # we want to return a scalar value for our next guess, we need
         # to re-scalarize h before combining it with our previous
