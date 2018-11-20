@@ -99,6 +99,21 @@ class TestNewton(unittest.TestCase):
         f = lambda x : x**2 + 1.0
         solver = newton.Newton(f, tol=1.e-8, maxiter=10)
         self.assertRaises(RuntimeError, solver.solve, 1.0)
+
+    def test2DFunction(self):
+        # Tests that "roots" of the vector field f = u + v are located
+        # where u and v components (mutually orthogonal) are both zero.
+        # That is, if u = x + y and v = 2x + y, then f is the zero vector
+        # only at x = 0 and y = 0.
+        A = np.matrix([[1.0,1.0],[2.0,1.0]])
+        f = lambda x : A*x
+        solver = newton.Newton(f, tol=1.e-8, maxiter=100)
+        xo = np.transpose(np.matrix([1.0,1.0]))
+        #print(xo,f(xo))
+        x = solver.solve(xo)
+        #print(x)
+        self.assertAlmostEqual(x[0,0],-x[1,0])
+        
         
 if __name__ == "__main__":
     unittest.main()

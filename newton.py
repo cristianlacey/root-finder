@@ -71,7 +71,7 @@ class Newton(object):
             if np.isscalar(x):
                 epsilon = 0.1
             else:
-                epsilon = np.ones(x.shape)*0.1
+                epsilon = np.ones_like(x)*0.1
             x += epsilon
             fx = self._f(x)
             Df_x = F.approximateJacobian(self._f, x, self._dx)
