@@ -13,7 +13,7 @@ class Newton(object):
 
     """
     
-    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6, max_radius=5.0):
+    def __init__(self, f, tol=1.e-7, maxiter=20, dx=1.e-6, max_radius=5.0, Df=None):
         """Parameters:
         
         f: the function whose roots we seek. Can be scalar- or
@@ -31,6 +31,7 @@ class Newton(object):
         self._maxiter = maxiter
         self._dx = dx
         self._max_radius = max_radius
+        self._Df = Df
 
     def solve(self, x0):
         """Determine a solution of f(x) = 0, using Newton's method, starting
@@ -63,7 +64,10 @@ class Newton(object):
         if fx is None:
             fx = self._f(x)
 
-        Df_x = F.approximateJacobian(self._f, x, self._dx)
+        if self._Df:
+            Df_x = self._Df(x)
+        else:
+            Df_x = F.approximateJacobian(self._f, x, self._dx)
         
         # linalg.solve(A,B) returns the matrix solution to AX = B, so
         # it gives (A^{-1}) B. np.matrix() promotes scalars to 1x1

@@ -104,8 +104,8 @@ class TestNewton(unittest.TestCase):
     def test2DFunction(self):
         # Tests that "roots" of the vector field f = u + v are located
         # where u and v components (mutually orthogonal) are both zero.
-        # That is, if u = x + y and v = 2x + y, then f is the zero vector
-        # only at x = 0 and y = 0.
+        # That is, if u = x + y and v = 2x + y, then f is the zero
+        # vector only at x = 0 and y = 0.
         A = np.matrix([[1.0,1.0],[2.0,1.0]])
         f = lambda x : A*x
         solver = newton.Newton(f, tol=1.e-8, maxiter=100)
@@ -113,7 +113,8 @@ class TestNewton(unittest.TestCase):
         #print(x0,f(x0))
         x = solver.solve(x0)
         #print(x)
-        self.assertAlmostEqual(x[0,0],-x[1,0])
+        self.assertAlmostEqual(x[0,0],0.0)
+        self.assertAlmostEqual(x[1,0],0.0)
 
     def testRootBound(self):
         # Test simple case of y = x where initial guess for the
@@ -125,7 +126,34 @@ class TestNewton(unittest.TestCase):
         solver = newton.Newton(f, tol=1.e-8, maxiter=100, max_radius=4.0)
         x0 = 5.0
         self.assertRaises(ValueError, solver.solve, x0)
+
+    def testAnalyticalJacobian1D(self):
+        # Tests that the solver can find the root of the function
+        # y = x^2 - 1 at x = 1 when starting within the max_radius
+        # at an initial x of 4.0. This test additionally tests the
+        # funtionality of passing an analytical Jacobian, which in
+        # this case is Df = 2x.
+        f = lambda x : x**2 - 1.0
+        Df = lambda x : 2*x
+        solver = newton.Newton(f,Df=Df)
+        x = solver.solve(4.0)
+        self.assertAlmostEqual(x,1.0)
         
+    def testAnalyticalJacobian2D(self):
+        # Tests that "roots" of the vector field f = u + v are located
+        # where u and v components (mutually orthogonal) are both zero.
+        # That is, if u = x + y and v = 2x + y, then f is the zero
+        # vector only at x = 0 and y = 0. This test additionally tests
+        # analytical Jacobian functionality for a 2D function.
+        A = np.matrix([[1.0,1.0],[2.0,1.0]])
+        f = lambda x : A*x
+        Df = lambda x : np.matrix([[1.0,1.0],[2.0,1,0]])
+        solver = newton.Newton(f, Df=Df)
+        x0 = np.transpose(np.matrix([1.0,1.0]))
+        x = solver.solve(x0)
+        self.assertAlmostEqual(x[0,0],0.0)
+        self.assertAlmostEqual(x[1,0],0.0)
+    
 if __name__ == "__main__":
     unittest.main()
 
