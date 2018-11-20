@@ -13,7 +13,7 @@ class Newton(object):
 
     """
     
-    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6):
+    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6, max_radius=5.0):
         """Parameters:
         
         f: the function whose roots we seek. Can be scalar- or
@@ -30,6 +30,7 @@ class Newton(object):
         self._tol = tol
         self._maxiter = maxiter
         self._dx = dx
+        self._max_radius = max_radius
 
     def solve(self, x0):
         """Determine a solution of f(x) = 0, using Newton's method, starting
@@ -48,8 +49,10 @@ class Newton(object):
             if np.linalg.norm(fx) < self._tol:
                 return x
             x = self.step(x, fx)
+            if np.linalg.norm(x - x0) > self._max_radius:
+                raise ValueError("Root outside of max_radius.")
             
-        raise RuntimeError("MaxIterReached")
+        raise RuntimeError("Max iterations reached")
         return x
 
     def step(self, x, fx=None):

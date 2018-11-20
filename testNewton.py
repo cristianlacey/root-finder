@@ -40,7 +40,7 @@ class TestNewton(unittest.TestCase):
         # Taking root1 to be x = -1, iterate over several
         # initial conditions to the left of zero, where
         # the closest root is x = -1.
-        root1_init_cond = np.linspace(-1000.0,-0.1,100)
+        root1_init_cond = np.linspace(-2.0,-0.1,10)
         for init in root1_init_cond:
             x1 = solver.solve(init)
             self.assertAlmostEqual(x1, -1.0)
@@ -48,7 +48,7 @@ class TestNewton(unittest.TestCase):
         # Taking root2 to be x = 1, iterate over several
         # initial conditions to the right of zero, where
         # the closest root is x = 1.
-        root2_init_cond = np.linspace(0.1,1000.0,100)
+        root2_init_cond = np.linspace(0.1,2.0,10)
         for init in root2_init_cond:
             x2 = solver.solve(init)
             self.assertAlmostEqual(x2, 1.0)
@@ -63,19 +63,19 @@ class TestNewton(unittest.TestCase):
         solver = newton.Newton(f, tol=1.e-8, maxiter=100)
 
         # Checks initial conditions close to root at x = -10
-        root1_init_cond = np.linspace(-100.0, -6.0, 100)
+        root1_init_cond = np.linspace(-11.0, -9.0, 10)
         for init in root1_init_cond:
             x1 = solver.solve(init)
             self.assertAlmostEqual(x1,-10.0)
 
         # Checks initial conditions close to root at x = 0
-        root2_init_cond = np.linspace(-4.0, 4.0, 10)
+        root2_init_cond = np.linspace(-1.0, 1.0, 10)
         for init in root2_init_cond:
             x2 = solver.solve(init)
             self.assertAlmostEqual(x2, 0.0)
 
         # Checks initial conditions close to root at x = 10
-        root3_init_cond = np.linspace(6.0, 100.0, 100)
+        root3_init_cond = np.linspace(9.0, 11.0, 10)
         for init in root3_init_cond:
             x3 = solver.solve(init)
             self.assertAlmostEqual(x3, 10.0)
@@ -88,7 +88,7 @@ class TestNewton(unittest.TestCase):
         # the derivative will be zero and the Newton.step()
         # method should increment the initial guess by epsilon.
         f = lambda x : x**2 - 1.0
-        solver = newton.Newton(f, tol=1.e-8, maxiter=100)
+        solver = newton.Newton(f, tol=1.e-8, maxiter=100, max_radius=1.e10)
         x = solver.solve(0.0)
         self.assertAlmostEqual(x, 1.0)
             
@@ -97,8 +97,9 @@ class TestNewton(unittest.TestCase):
         # Should raise exception when roots aren't located within
         # desired threshold.
         f = lambda x : x**2 + 1.0
-        solver = newton.Newton(f, tol=1.e-8, maxiter=10)
-        self.assertRaises(RuntimeError, solver.solve, 1.0)
+        solver = newton.Newton(f, tol=1.e-8, maxiter=10, max_radius=1000.0)
+        x0 = 10.0
+        self.assertRaises(RuntimeError, solver.solve, x0)
 
     def test2DFunction(self):
         # Tests that "roots" of the vector field f = u + v are located
@@ -108,12 +109,22 @@ class TestNewton(unittest.TestCase):
         A = np.matrix([[1.0,1.0],[2.0,1.0]])
         f = lambda x : A*x
         solver = newton.Newton(f, tol=1.e-8, maxiter=100)
-        xo = np.transpose(np.matrix([1.0,1.0]))
-        #print(xo,f(xo))
-        x = solver.solve(xo)
+        x0 = np.transpose(np.matrix([1.0,1.0]))
+        #print(x0,f(x0))
+        x = solver.solve(x0)
         #print(x)
         self.assertAlmostEqual(x[0,0],-x[1,0])
-        
+
+    def testRootBound(self):
+        # Test simple case of y = x where initial guess for the
+        # root is x = 5. Specify the maximum radius as 4, so one
+        # would expect the Newton() to raise an exception saying
+        # the maximum radius was surpassed, while it converges to
+        # actual root at x = 0.
+        f = lambda x : x
+        solver = newton.Newton(f, tol=1.e-8, maxiter=100, max_radius=4.0)
+        x0 = 5.0
+        self.assertRaises(ValueError, solver.solve, x0)
         
 if __name__ == "__main__":
     unittest.main()
