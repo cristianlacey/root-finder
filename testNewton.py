@@ -144,7 +144,8 @@ class TestNewton(unittest.TestCase):
         # where u and v components (mutually orthogonal) are both zero.
         # That is, if u = x + y and v = 2x + y, then f is the zero
         # vector only at x = 0 and y = 0. This test additionally tests
-        # analytical Jacobian functionality for a 2D function.
+        # analytical Jacobian functionality for a 2D function - in
+        # this case would be [[1,1],[2,1]].
         A = np.matrix([[1.0,1.0],[2.0,1.0]])
         f = lambda x : A*x
         Df = lambda x : np.matrix([[1.0,1.0],[2.0,1,0]])
