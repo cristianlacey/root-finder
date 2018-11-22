@@ -62,6 +62,19 @@ class TestFunctions(unittest.TestCase):
         # array-specific assert statements found in numpy.testing
         npt.assert_array_almost_equal(Df_x, A)
 
+    def test_ApproxJacobian2DHigherOrder(self):
+        # Test higher order 2D function f where fx = x^2 and
+        # fy = (y-3)^2. The Jacobian is [[2x 0],[0 2(y-3)]], which,
+        # evaluated at x0 of [0.5, 2.5] should evaluate to
+        # [[1.0,0.0],[0.0,-1.0]].
+        def f(x):
+            return np.matrix([[x[0,0]**2],[(x[1,0]-3.0)**2]])
+        x0 = np.matrix([[0.5],[2.5]])
+        Df_x = F.approximateJacobian(f,x0)
+        self.assertEqual(Df_x.shape,(2,2))
+        A = np.matrix([[1.0,0.0],[0.0,-1.0]])
+        npt.assert_array_almost_equal(Df_x, A)        
+        
     def test_Polynomial(self):
         # p(x) = x^2 + 5x + 4
         p = F.Polynomial([4, 5, 1])
