@@ -74,7 +74,7 @@ class Newton(object):
         # matrices.
         try:
             h = np.linalg.solve(np.matrix(Df_x), np.matrix(fx))
-        except: # FIX THIS, NAME THE EXCEPTION
+        except np.linalg.linalg.LinAlgError:
             if np.isscalar(x):
                 epsilon = 0.1
             else:
