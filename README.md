@@ -1,6 +1,6 @@
-#APC 524: HW3 *Cristian Lacey*
+# APC 524: HW3 *Cristian Lacey*
 
-##Description
+## Description
 
 The provided code initially included newton.py, which defined the
 class Newton(), and functions.py, which defined the
@@ -8,7 +8,7 @@ approximateJacobian function and polynomial class. Tests were
 added to testNewton.py and testFunctions.py and the code was updated
 so that the new tests passed.
 
-##Features added:
+## Features added:
 1. Bound the root
    User can specify a bound for the Newton.solve() method. If at any
    point during the calculation the root leaves the bounded region,
@@ -21,7 +21,7 @@ so that the new tests passed.
    Changed method of finding numerical approximation of Jacobian to
    symmetric difference quotient.
 
-##Tests added to testNewton.py:
+## Tests added to testNewton.py:
 1. testQuadratic()
    Tests that Newton() can find the roots of a parabola for different
    initial conditions.
@@ -47,7 +47,7 @@ so that the new tests passed.
 8. testAnalyticalJacobian2D()
    Tests functionality of analytical Jacobian with 2D function.
 
-##Tests added to testFunctions.py:
+## Tests added to testFunctions.py:
 1. test_ApproxJacobian2DHigherOrder()
    Tests that numerical approximation of Jacobian is accurate for
    higher order 2D functions.
