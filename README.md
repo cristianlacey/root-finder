@@ -1,4 +1,5 @@
-# APC 524: HW3 *Cristian Lacey*
+# N-Dimensional Root-Finder
+## APC 524: HW3
 
 ## Description
 
